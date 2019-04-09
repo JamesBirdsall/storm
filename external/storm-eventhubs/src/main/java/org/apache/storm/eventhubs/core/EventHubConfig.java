@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.apache.storm.eventhubs.spout;
+package org.apache.storm.eventhubs.core;
 
 import com.microsoft.azure.eventhubs.EventHubClient;
 import com.microsoft.azure.servicebus.ConnectionStringBuilder;
@@ -27,233 +27,138 @@ import java.util.List;
 import org.apache.storm.eventhubs.format.IEventDataScheme;
 import org.apache.storm.eventhubs.format.StringEventDataScheme;
 
-public class EventHubSpoutConfig implements Serializable {
-	private static final long serialVersionUID = 1L;
+public class EventHubConfig implements Serializable {
+    private static final long serialVersionUID = -2913928074769667240L;
 
-	public static final String EH_SERVICE_FQDN_SUFFIX = "servicebus.windows.net";
-	private final String userName;
-	private final String password;
-	private final String namespace;
-	private final String entityPath;
-	private final int partitionCount;
+    protected final String userName;
+    protected final String password;
+    protected final String namespace;
+    protected final String entityPath;
+    protected final int partitionCount;
 
-	private String zkConnectionString = null; // if null then use zookeeper used
-												// by Storm
-	private int checkpointIntervalInSeconds = 10;
-	private int receiverCredits = 1024;
-	private int maxPendingMsgsPerPartition = 1024;
-	private long enqueueTimeFilter = 0; // timestamp in millisecond, 0 means
-										// disabling filter
-	private String connectionString;
-	private String topologyName;
-	private IEventDataScheme scheme = new StringEventDataScheme();
-	private String consumerGroupName = EventHubClient.DEFAULT_CONSUMER_GROUP_NAME;
-	private String outputStreamId;
+    protected String zkConnectionString = null; // if null then use zookeeper used by Storm
+    protected int checkpointIntervalInSeconds = 10;
+    protected int receiverCredits = 1024;
+    protected int maxPendingMsgsPerPartition = 1024;
+    protected int receiveEventsMaxCount = 1;
+    
+    protected int prefetchCount = 999;
+    protected long enqueueTimeFilter = 0L; // timestamp in millisecond, 0 means disabling filter
+    protected String connectionString;
+    protected String topologyName;
+    protected IEventDataScheme scheme = new StringEventDataScheme();
+    protected String consumerGroupName = EventHubClient.DEFAULT_CONSUMER_GROUP_NAME;
 
+    public EventHubConfig(String namespace, String entityPath, String username,
+            String password, int partitionCount) {
+        this.namespace = namespace;
+        this.entityPath = entityPath;
+        this.userName = username;
+        this.password = password;
+        this.partitionCount = partitionCount;
+        this.connectionString = new ConnectionStringBuilder(namespace, entityPath, 
+            username, password).toString();
+    }
+    
+    public String getUserName() {
+    	return this.userName;
+    }
+    
+    public String getPassword() {
+    	return this.password;
+    }
 
-	// These are mandatory parameters
-	public EventHubSpoutConfig(String username, String password,
-			String namespace, String entityPath, int partitionCount) {
-		this.userName = username;
-		this.password = password;
-		this.connectionString = new ConnectionStringBuilder(namespace,entityPath,
-				username,password).toString();
-		this.namespace = namespace;
-		this.entityPath = entityPath;
-		this.partitionCount = partitionCount;
-	}
+    public String getNamespace() {
+        return this.namespace;
+    }
 
-	// Keep this constructor for backward compatibility
-	public EventHubSpoutConfig(String username, String password,
-			String namespace, String entityPath, int partitionCount,
-			String zkConnectionString) {
-		this(username, password, namespace, entityPath, partitionCount);
-		setZkConnectionString(zkConnectionString);
-	}
+    public String getEntityPath() {
+        return this.entityPath;
+    }
 
-	// Keep this constructor for backward compatibility
-	public EventHubSpoutConfig(String username, String password,
-			String namespace, String entityPath, int partitionCount,
-			String zkConnectionString, int checkpointIntervalInSeconds,
-			int receiverCredits) {
-		this(username, password, namespace, entityPath, partitionCount,
-				zkConnectionString);
-		setCheckpointIntervalInSeconds(checkpointIntervalInSeconds);
-		setReceiverCredits(receiverCredits);
-	}
+    public int getPartitionCount() {
+        return this.partitionCount;
+    }
 
-	public EventHubSpoutConfig(String username, String password,
-			String namespace, String entityPath, int partitionCount,
-			String zkConnectionString, int checkpointIntervalInSeconds,
-			int receiverCredits, long enqueueTimeFilter) {
-		this(username, password, namespace, entityPath, partitionCount,
-				zkConnectionString, checkpointIntervalInSeconds,
-				receiverCredits);
-		setEnqueueTimeFilter(enqueueTimeFilter);
-	}
+    public void setZkConnectionString(String value) {
+    	this.zkConnectionString = value;
+    }
 
-	// Keep this constructor for backward compatibility
-	public EventHubSpoutConfig(String username, String password,
-			String namespace, String entityPath, int partitionCount,
-			String zkConnectionString, int checkpointIntervalInSeconds,
-			int receiverCredits, int maxPendingMsgsPerPartition,
-			long enqueueTimeFilter) {
+    public String getZkConnectionString() {
+        return this.zkConnectionString;
+    }
 
-		this(username, password, namespace, entityPath, partitionCount,
-				zkConnectionString, checkpointIntervalInSeconds,
-				receiverCredits);
-		setMaxPendingMsgsPerPartition(maxPendingMsgsPerPartition);
-		setEnqueueTimeFilter(enqueueTimeFilter);
-	}
+    public int getCheckpointIntervalInSeconds() {
+        return this.checkpointIntervalInSeconds;
+    }
 
-	public String getNamespace() {
-		return namespace;
-	}
+    public void setCheckpointIntervalInSeconds(int value) {
+    	this.checkpointIntervalInSeconds = value;
+    }
 
-	public String getEntityPath() {
-		return entityPath;
-	}
+    @Deprecated
+    public int getReceiverCredits() {
+        return this.receiverCredits;
+    }
 
-	public int getPartitionCount() {
-		return partitionCount;
-	}
+    @Deprecated
+    public void setReceiverCredits(int value) {
+    	this.receiverCredits = value;
+    }
 
-	public String getZkConnectionString() {
-		return zkConnectionString;
-	}
+    public int getMaxPendingMsgsPerPartition() {
+        return this.maxPendingMsgsPerPartition;
+    }
 
-	public void setZkConnectionString(String value) {
-		zkConnectionString = value;
-	}
+    public void setMaxPendingMsgsPerPartition(int maxPendingMsgsPerPartition) {
+    	this.maxPendingMsgsPerPartition = maxPendingMsgsPerPartition;
+    }
+    
+    public int getReceiveEventsMaxCount() {
+    	return this.receiveEventsMaxCount;
+    }
+    
+    public void setReceiveEventsMaxCount(int receiveEventsMaxCount) {
+    	this.receiveEventsMaxCount = receiveEventsMaxCount;
+    }
 
-	public EventHubSpoutConfig withZkConnectionString(String value) {
-		setZkConnectionString(value);
-		return this;
-	}
+    public long getEnqueueTimeFilter() {
+        return this.enqueueTimeFilter;
+    }
 
-	public int getCheckpointIntervalInSeconds() {
-		return checkpointIntervalInSeconds;
-	}
+    public void setEnqueueTimeFilter(long enqueueTimeFilter) {
+    	this.enqueueTimeFilter = enqueueTimeFilter;
+    }
 
-	public void setCheckpointIntervalInSeconds(int value) {
-		checkpointIntervalInSeconds = value;
-	}
+    public String getTopologyName() {
+        return this.topologyName;
+    }
 
-	public EventHubSpoutConfig withCheckpointIntervalInSeconds(int value) {
-		setCheckpointIntervalInSeconds(value);
-		return this;
-	}
+    public void setTopologyName(String topologyName) {
+    	this.topologyName = topologyName;
+    }
 
-	public int getReceiverCredits() {
-		return receiverCredits;
-	}
+    public IEventDataScheme getEventDataScheme() {
+        return this.scheme;
+    }
 
-	public void setReceiverCredits(int value) {
-		receiverCredits = value;
-	}
+    public void setEventDataScheme(IEventDataScheme scheme) {
+        this.scheme = scheme;
+    }
 
-	public EventHubSpoutConfig withReceiverCredits(int value) {
-		setReceiverCredits(value);
-		return this;
-	}
+    public String getConsumerGroupName() {
+        return this.consumerGroupName;
+    }
 
-	public int getMaxPendingMsgsPerPartition() {
-		return maxPendingMsgsPerPartition;
-	}
+    public void setConsumerGroupName(String consumerGroupName) {
+    	this.consumerGroupName = consumerGroupName;
+    }
 
-	public void setMaxPendingMsgsPerPartition(int value) {
-		maxPendingMsgsPerPartition = value;
-	}
-
-	public EventHubSpoutConfig withMaxPendingMsgsPerPartition(int value) {
-		setMaxPendingMsgsPerPartition(value);
-		return this;
-	}
-
-	public long getEnqueueTimeFilter() {
-		return enqueueTimeFilter;
-	}
-
-	public void setEnqueueTimeFilter(long value) {
-		enqueueTimeFilter = value;
-	}
-
-	public EventHubSpoutConfig withEnqueueTimeFilter(long value) {
-		setEnqueueTimeFilter(value);
-		return this;
-	}
-
-	public String getTopologyName() {
-		return topologyName;
-	}
-
-	public void setTopologyName(String value) {
-		topologyName = value;
-	}
-
-	public EventHubSpoutConfig withTopologyName(String value) {
-		setTopologyName(value);
-		return this;
-	}
-
-	public IEventDataScheme getEventDataScheme() {
-		return scheme;
-	}
-
-	public void setEventDataScheme(IEventDataScheme scheme) {
-		this.scheme = scheme;
-	}
-
-	public EventHubSpoutConfig withEventDataScheme(IEventDataScheme value) {
-		setEventDataScheme(value);
-		return this;
-	}
-
-	public String getConsumerGroupName() {
-		return consumerGroupName;
-	}
-
-	public void setConsumerGroupName(String value) {
-		consumerGroupName = value;
-	}
-
-	public EventHubSpoutConfig withConsumerGroupName(String value) {
-		setConsumerGroupName(value);
-		return this;
-	}
-
-	public List<String> getPartitionList() {
-		List<String> partitionList = new ArrayList<String>();
-
-		for (int i = 0; i < this.partitionCount; i++) {
-			partitionList.add(Integer.toString(i));
-		}
-
-		return partitionList;
-	}
-
-	public String getConnectionString() {
-		return connectionString;
-	}
-
-	/*Keeping it for backward compatibility*/
-	public void setTargetAddress(String targetFqnAddress) {
-	}
-
-	public void setTargetAddress(){
-
-	}
-
-	public EventHubSpoutConfig withTargetAddress(String targetFqnAddress) {
-		setTargetAddress(targetFqnAddress);
-		return this;
-	}
-
-	public String getOutputStreamId() {
-		return outputStreamId;
-	}
-
-	public void setOutputStreamId(String outputStreamId) {
-		this.outputStreamId = outputStreamId;
-	}
+    public int getPrefetchCount() {
+    	return this.prefetchCount;
+    }
+    
+    public void setPrefetchCount(int prefetchCount) {
+    	this.prefetchCount = prefetchCount;
+    }
 }
