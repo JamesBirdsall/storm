@@ -17,15 +17,10 @@
  *******************************************************************************/
 package org.apache.storm.eventhubs.format;
 
-import com.microsoft.azure.eventhubs.EventData;
-
+import org.apache.storm.eventhubs.core.EventHubMessage;
 import org.apache.storm.eventhubs.core.FieldConstants;
 import org.apache.storm.tuple.Fields;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,30 +35,18 @@ import java.util.List;
  * For metadata please refer to {@link BinaryEventDataScheme}, {@link EventDataScheme}
  */
 public class StringEventDataScheme implements IEventDataScheme {
+    private static final long serialVersionUID = 1L;
 
-  private static final long serialVersionUID = 1L;
-  private static final Logger logger = LoggerFactory.getLogger(StringEventDataScheme.class);
-
-  @Override
-  public List<Object> deserialize(EventData eventData) {
-    final List<Object> fieldContents = new ArrayList<Object>();
-    String messageData = "";
-    if(eventData.getBytes()!=null)
-      messageData = new String (eventData.getBytes());
-    else if(eventData.getObject()!=null){
-      try{
-        messageData = new String(SerializeDeserializeUtil.serialize(eventData.getObject()),Charset.defaultCharset());
-      }catch (IOException e){
-        logger.error("Failed to serialize object"+e.toString());
-      }
+    @Override
+    public List<Object> deserialize(EventHubMessage eventHubMessage) {
+        final List<Object> fieldContents = new ArrayList<Object>();
+        String messageData = new String(eventHubMessage.getContent());
+        fieldContents.add(messageData);
+        return fieldContents;
     }
 
-    fieldContents.add(messageData);
-    return fieldContents;
-  }
-
-  @Override
-  public Fields getOutputFields() {
-    return new Fields(FieldConstants.Message);
-  }
+    @Override
+    public Fields getOutputFields() {
+        return new Fields(FieldConstants.MESSAGE_FIELD);
+    }
 }
