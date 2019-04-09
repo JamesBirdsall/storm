@@ -20,6 +20,7 @@ package org.apache.storm.eventhubs.spout;
 import com.google.common.base.Strings;
 import org.apache.storm.Config;
 import org.apache.storm.eventhubs.core.EventHubReceiverImpl;
+import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.IEventHubReceiver;
 import org.apache.storm.eventhubs.core.IEventHubReceiverFactory;
 import org.apache.storm.eventhubs.core.IPartitionCoordinator;
@@ -49,7 +50,7 @@ public class EventHubSpout extends BaseRichSpout {
   private static final Logger logger = LoggerFactory.getLogger(EventHubSpout.class);
 
   private final UUID instanceId;
-  private final EventHubSpoutConfig eventHubConfig;
+  private final EventHubConfig eventHubConfig;
   private final IEventDataScheme scheme;
   private final int checkpointIntervalInSeconds;
 
@@ -63,14 +64,14 @@ public class EventHubSpout extends BaseRichSpout {
 
   public EventHubSpout(String username, String password, String namespace,
       String entityPath, int partitionCount) {
-    this(new EventHubSpoutConfig(username, password, namespace, entityPath, partitionCount));
+    this(new EventHubConfig(username, password, namespace, entityPath, partitionCount));
   }
 
-  public EventHubSpout(EventHubSpoutConfig spoutConfig) {
+  public EventHubSpout(EventHubConfig spoutConfig) {
     this(spoutConfig, null, null, null);
   }
   
-  public EventHubSpout(EventHubSpoutConfig spoutConfig,
+  public EventHubSpout(EventHubConfig spoutConfig,
       IStateStore store,
       IPartitionManagerFactory pmFactory,
       IEventHubReceiverFactory recvFactory) {
@@ -84,7 +85,7 @@ public class EventHubSpout extends BaseRichSpout {
     if(this.pmFactory == null) {
       this.pmFactory = new IPartitionManagerFactory() {
         @Override
-        public IPartitionManager create(EventHubSpoutConfig spoutConfig,
+        public IPartitionManager create(EventHubConfig spoutConfig,
             String partitionId, IStateStore stateStore,
             IEventHubReceiver receiver) {
           return new PartitionManager(spoutConfig, partitionId,
@@ -96,7 +97,7 @@ public class EventHubSpout extends BaseRichSpout {
     if(this.recvFactory == null) {
       this.recvFactory = new IEventHubReceiverFactory() {
         @Override
-        public IEventHubReceiver create(EventHubSpoutConfig spoutConfig,
+        public IEventHubReceiver create(EventHubConfig spoutConfig,
             String partitionId) {
           return new EventHubReceiverImpl(spoutConfig, partitionId);
         }

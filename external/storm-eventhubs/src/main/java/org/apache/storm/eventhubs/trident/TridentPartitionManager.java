@@ -20,9 +20,9 @@ package org.apache.storm.eventhubs.trident;
 import com.microsoft.eventhubs.client.Constants;
 import com.microsoft.eventhubs.client.EventHubException;
 
+import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.IEventHubReceiver;
 import org.apache.storm.eventhubs.spout.EventDataWrap;
-import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,10 +33,10 @@ public class TridentPartitionManager implements ITridentPartitionManager {
   private static final Logger logger = LoggerFactory.getLogger(TridentPartitionManager.class);
   private final int receiveTimeoutMs = 5000;
   private final IEventHubReceiver receiver;
-  private final EventHubSpoutConfig spoutConfig;
+  private final EventHubConfig spoutConfig;
   private String lastOffset = Constants.DefaultStartingOffset;
   
-  public TridentPartitionManager(EventHubSpoutConfig spoutConfig, IEventHubReceiver receiver) {
+  public TridentPartitionManager(EventHubConfig spoutConfig, IEventHubReceiver receiver) {
     this.receiver = receiver;
     this.spoutConfig = spoutConfig;
   }

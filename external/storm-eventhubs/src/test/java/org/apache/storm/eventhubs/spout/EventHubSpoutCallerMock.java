@@ -17,6 +17,7 @@
  *******************************************************************************/
 package org.apache.storm.eventhubs.spout;
 
+import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.IEventHubReceiver;
 import org.apache.storm.eventhubs.core.IEventHubReceiverFactory;
 import org.apache.storm.eventhubs.core.MessageId;
@@ -35,13 +36,13 @@ public class EventHubSpoutCallerMock {
   public EventHubSpoutCallerMock(int totalPartitions,
       int totalTasks, int taskIndex, int checkpointInterval) {
     stateStore = new StateStoreMock();
-    EventHubSpoutConfig conf = new EventHubSpoutConfig("username", "password",
+    EventHubConfig conf = new EventHubConfig("username", "password",
         "namespace", "entityname", totalPartitions, "zookeeper", checkpointInterval, 1024);
     conf.setTopologyName("TestTopo");
     
     IEventHubReceiverFactory recvFactory = new IEventHubReceiverFactory() {
       @Override
-      public IEventHubReceiver create(EventHubSpoutConfig config,
+      public IEventHubReceiver create(EventHubConfig config,
           String partitionId) {
         return new EventHubReceiverMock(partitionId);
       }

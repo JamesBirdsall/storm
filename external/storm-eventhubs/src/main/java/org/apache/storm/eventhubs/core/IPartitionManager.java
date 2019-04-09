@@ -19,21 +19,20 @@ package org.apache.storm.eventhubs.core;
 
 import java.util.Map;
 
-import org.apache.storm.eventhubs.spout.EventDataWrap;
-
 public interface IPartitionManager {
+    void open() throws Exception;
 
-  void open() throws Exception;
+    void close() throws Exception;
 
-  void close();
+    EventHubMessage receive();
 
-  EventDataWrap receive();
+    void checkpoint() throws Exception;
 
-  void checkpoint();
+    void ack(String offset);
 
-  void ack(String offset);
-
-  void fail(String offset);
+    void fail(String offset);
   
-  Map getMetricsData();
+    Map<String, Object> getMetricsData();
+    
+    String getPartitionId();
 }

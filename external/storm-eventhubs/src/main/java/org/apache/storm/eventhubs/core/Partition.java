@@ -18,7 +18,7 @@
 package org.apache.storm.eventhubs.core;
 
 import java.io.Serializable;
-import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
+
 import org.apache.storm.trident.spout.ISpoutPartition;
 
 /**
@@ -28,7 +28,7 @@ public class Partition implements ISpoutPartition, Serializable {
   private static final long serialVersionUID = 1L;
   String partitionId;
   
-  public Partition(EventHubSpoutConfig config, String partitionId) {
+  public Partition(EventHubConfig config, String partitionId) {
     this.partitionId = partitionId;
   }
   

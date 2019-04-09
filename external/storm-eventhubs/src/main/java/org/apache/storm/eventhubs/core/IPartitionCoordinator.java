@@ -20,8 +20,7 @@ package org.apache.storm.eventhubs.core;
 import java.util.List;
 
 public interface IPartitionCoordinator {
+    List<IPartitionManager> getMyPartitionManagers();
 
-  List<IPartitionManager> getMyPartitionManagers();
-
-  IPartitionManager getPartitionManager(String partitionId);
+    IPartitionManager getPartitionManager(String partitionId);
 }

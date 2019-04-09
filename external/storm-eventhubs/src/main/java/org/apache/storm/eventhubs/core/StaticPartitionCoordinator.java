@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 import org.apache.storm.eventhubs.state.IStateStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +32,7 @@ public class StaticPartitionCoordinator implements IPartitionCoordinator {
 
   private static final Logger logger = LoggerFactory.getLogger(StaticPartitionCoordinator.class);
 
-  protected final EventHubSpoutConfig config;
+  protected final EventHubConfig config;
   protected final int taskIndex;
   protected final int totalTasks;
   protected final List<IPartitionManager> partitionManagers;
@@ -41,7 +40,7 @@ public class StaticPartitionCoordinator implements IPartitionCoordinator {
   protected final IStateStore stateStore;
 
   public StaticPartitionCoordinator(
-    EventHubSpoutConfig spoutConfig,
+    EventHubConfig spoutConfig,
     int taskIndex,
     int totalTasks,
     IStateStore stateStore,

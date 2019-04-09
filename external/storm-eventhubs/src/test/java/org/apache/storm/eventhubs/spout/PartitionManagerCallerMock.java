@@ -17,6 +17,7 @@
  *******************************************************************************/
 package org.apache.storm.eventhubs.spout;
 
+import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.IPartitionManager;
 import org.apache.storm.eventhubs.core.PartitionManager;
 import org.apache.storm.eventhubs.state.IStateStore;
@@ -35,7 +36,7 @@ public class PartitionManagerCallerMock {
   
   public PartitionManagerCallerMock(String partitionId, long enqueueTimeFilter) {
     EventHubReceiverMock receiver = new EventHubReceiverMock(partitionId);
-    EventHubSpoutConfig conf = new EventHubSpoutConfig("username", "password",
+    EventHubConfig conf = new EventHubConfig("username", "password",
       "namespace", "entityname", 16, "zookeeper", 10, 1024, 1024, enqueueTimeFilter);
     conf.setTopologyName("TestTopo");
     stateStore = new StateStoreMock();

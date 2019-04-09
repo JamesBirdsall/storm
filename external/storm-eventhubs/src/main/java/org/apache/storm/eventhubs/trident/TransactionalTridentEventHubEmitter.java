@@ -20,6 +20,7 @@ package org.apache.storm.eventhubs.trident;
 import com.microsoft.eventhubs.client.Constants;
 
 import org.apache.storm.eventhubs.core.EventHubReceiverImpl;
+import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.IEventHubReceiver;
 import org.apache.storm.eventhubs.core.IEventHubReceiverFactory;
 import org.apache.storm.eventhubs.core.Partition;
@@ -40,17 +41,17 @@ public class TransactionalTridentEventHubEmitter
     implements IPartitionedTridentSpout.Emitter<Partitions, Partition, Map> {
   private static final Logger logger = LoggerFactory.getLogger(TransactionalTridentEventHubEmitter.class);
   private final int batchSize; 
-  private final EventHubSpoutConfig spoutConfig;
+  private final EventHubConfig spoutConfig;
   private Map<String, ITridentPartitionManager> pmMap;
   private ITridentPartitionManagerFactory pmFactory;
   private IEventHubReceiverFactory recvFactory;
 
-  public TransactionalTridentEventHubEmitter(EventHubSpoutConfig spoutConfig) {
+  public TransactionalTridentEventHubEmitter(EventHubConfig spoutConfig) {
     //use batch size that matches the default credit size
     this(spoutConfig, spoutConfig.getReceiverCredits(), null, null);
   }
       
-  public TransactionalTridentEventHubEmitter(final EventHubSpoutConfig spoutConfig,
+  public TransactionalTridentEventHubEmitter(final EventHubConfig spoutConfig,
       int batchSize,
       ITridentPartitionManagerFactory pmFactory,
       IEventHubReceiverFactory recvFactory) {
@@ -70,7 +71,7 @@ public class TransactionalTridentEventHubEmitter
     if(this.recvFactory == null) {
       this.recvFactory = new IEventHubReceiverFactory() {
         @Override
-        public IEventHubReceiver create(EventHubSpoutConfig config,
+        public IEventHubReceiver create(EventHubConfig config,
             String partitionId) {
           return new EventHubReceiverImpl(config, partitionId);
         }

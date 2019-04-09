@@ -17,28 +17,27 @@
  *******************************************************************************/
 package org.apache.storm.eventhubs.format;
 
-import com.microsoft.azure.eventhubs.EventData;
+import org.apache.storm.eventhubs.core.EventHubMessage;
 import org.apache.storm.tuple.Fields;
 
 import java.io.Serializable;
 import java.util.List;
 
 public interface IEventDataScheme extends Serializable {
+    /**
+     * Deserialize an AMQP Message into a Tuple.
+     *
+     * @see #getOutputFields() for the list of fields the tuple will contain.
+     *
+     * @param eventData The EventData to Deserialize.
+     * @return A tuple containing the deserialized fields of the message.
+     */
+    List<Object> deserialize(EventHubMessage paramEventHubMessage);
 
-  /**
-   * Deserialize an AMQP Message into a Tuple.
-   *
-   * @see #getOutputFields() for the list of fields the tuple will contain.
-   *
-   * @param eventData The EventData to Deserialize.
-   * @return A tuple containing the deserialized fields of the message.
-   */
-  List<Object> deserialize(EventData eventData);
-
-  /**
-   * Retrieve the Fields that are present on tuples created by this object.
-   *
-   * @return The Fields that are present on tuples created by this object.
-   */
-  Fields getOutputFields();
+    /**
+     * Retrieve the Fields that are present on tuples created by this object.
+     *
+     * @return The Fields that are present on tuples created by this object.
+     */
+    Fields getOutputFields();
 }

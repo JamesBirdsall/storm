@@ -24,11 +24,11 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.IEventHubReceiver;
 import org.apache.storm.eventhubs.core.IEventHubReceiverFactory;
 import org.apache.storm.eventhubs.core.Partition;
 import org.apache.storm.eventhubs.spout.EventHubReceiverMock;
-import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 
 public class TestTransactionalTridentEmitter {
   private TransactionalTridentEventHubEmitter emitter;
@@ -38,12 +38,12 @@ public class TestTransactionalTridentEmitter {
 
   @Before
   public void setUp() throws Exception {
-    EventHubSpoutConfig conf = new EventHubSpoutConfig("username", "password",
+    EventHubConfig conf = new EventHubConfig("username", "password",
         "namespace", "entityname", 16, "zookeeper");
     conf.setTopologyName("TestTopo");
     IEventHubReceiverFactory recvFactory = new IEventHubReceiverFactory() {
       @Override
-      public IEventHubReceiver create(EventHubSpoutConfig config,
+      public IEventHubReceiver create(EventHubConfig config,
           String partitionId) {
         return new EventHubReceiverMock(partitionId);
       }

@@ -20,7 +20,6 @@ package org.apache.storm.eventhubs.core;
 import com.microsoft.eventhubs.client.Constants;
 
 import org.apache.storm.eventhubs.spout.EventDataWrap;
-import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 import org.apache.storm.eventhubs.state.IStateStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,13 +36,13 @@ public class SimplePartitionManager implements IPartitionManager {
   protected String lastOffset = "-1";
   protected String committedOffset = "-1";
   
-  protected final EventHubSpoutConfig config;
+  protected final EventHubConfig config;
   private final String partitionId;
   private final IStateStore stateStore;
   private final String statePath;
   
   public SimplePartitionManager(
-      EventHubSpoutConfig spoutConfig,
+      EventHubConfig spoutConfig,
       String partitionId,
       IStateStore stateStore,
       IEventHubReceiver receiver) {

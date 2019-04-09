@@ -22,11 +22,9 @@ package org.apache.storm.eventhubs.core;
 
 import java.io.Serializable;
 
-import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
-
 /**
  * An abstract factory to generate EventHubReceiver
  */
 public interface IEventHubReceiverFactory extends Serializable {
-  IEventHubReceiver create(EventHubSpoutConfig config, String partitionId);
+    IEventHubReceiver create(EventHubConfig config, String partitionId);
 }

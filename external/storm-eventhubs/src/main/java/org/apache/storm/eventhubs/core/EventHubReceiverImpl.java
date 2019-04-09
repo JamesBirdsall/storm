@@ -24,7 +24,6 @@ import com.microsoft.azure.servicebus.ServiceBusException;
 import com.microsoft.eventhubs.client.EventHubException;
 
 import org.apache.storm.eventhubs.spout.EventDataWrap;
-import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 import org.apache.storm.metric.api.CountMetric;
 import org.apache.storm.metric.api.MeanReducer;
 import org.apache.storm.metric.api.ReducedMetric;
@@ -49,7 +48,7 @@ public class EventHubReceiverImpl implements IEventHubReceiver {
   private CountMetric receiveApiCallCount;
   private CountMetric receiveMessageCount;
 
-  public EventHubReceiverImpl(EventHubSpoutConfig config, String partitionId) {
+  public EventHubReceiverImpl(EventHubConfig config, String partitionId) {
     this.connectionString = config.getConnectionString();
     this.entityName = config.getEntityPath();
     this.partitionId = partitionId;

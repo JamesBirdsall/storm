@@ -20,10 +20,10 @@ package org.apache.storm.eventhubs.trident;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.IEventHubReceiverFactory;
 import org.apache.storm.eventhubs.core.Partition;
 import org.apache.storm.eventhubs.core.Partitions;
-import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 import org.apache.storm.trident.operation.TridentCollector;
 import org.apache.storm.trident.spout.IOpaquePartitionedTridentSpout;
 import org.apache.storm.trident.topology.TransactionAttempt;
@@ -33,11 +33,11 @@ import org.apache.storm.trident.topology.TransactionAttempt;
  */
 public class OpaqueTridentEventHubEmitter implements IOpaquePartitionedTridentSpout.Emitter<Partitions, Partition, Map> {
   private final TransactionalTridentEventHubEmitter transactionalEmitter;
-  public OpaqueTridentEventHubEmitter(EventHubSpoutConfig spoutConfig) {
+  public OpaqueTridentEventHubEmitter(EventHubConfig spoutConfig) {
     transactionalEmitter = new TransactionalTridentEventHubEmitter(spoutConfig);
   }
   
-  public OpaqueTridentEventHubEmitter(EventHubSpoutConfig spoutConfig,
+  public OpaqueTridentEventHubEmitter(EventHubConfig spoutConfig,
       int batchSize,
       ITridentPartitionManagerFactory pmFactory,
       IEventHubReceiverFactory recvFactory) {

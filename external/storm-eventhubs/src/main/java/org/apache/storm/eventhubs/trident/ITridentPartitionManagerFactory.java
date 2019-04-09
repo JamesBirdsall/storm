@@ -22,5 +22,5 @@ import java.io.Serializable;
 import org.apache.storm.eventhubs.core.IEventHubReceiver;
 
 public interface ITridentPartitionManagerFactory extends Serializable {
-  ITridentPartitionManager create(IEventHubReceiver receiver);
+    ITridentPartitionManager create(IEventHubReceiver paramIEventHubReceiver, String paramString);
 }

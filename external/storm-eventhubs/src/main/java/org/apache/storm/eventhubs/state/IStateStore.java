@@ -20,12 +20,11 @@ package org.apache.storm.eventhubs.state;
 import java.io.Serializable;
 
 public interface IStateStore extends Serializable {
+    void open();
 
-  public void open();
+    void close();
 
-  public void close();
+    void saveData(String path, String data);
 
-  public void saveData(String path, String data);
-
-  public String readData(String path);
+    String readData(String path);
 }

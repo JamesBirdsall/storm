@@ -22,17 +22,17 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.storm.trident.spout.IOpaquePartitionedTridentSpout;
 import org.apache.storm.trident.spout.IPartitionedTridentSpout;
+import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.Partition;
 import org.apache.storm.eventhubs.core.Partitions;
-import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 
 public class Coordinator implements IPartitionedTridentSpout.Coordinator<Partitions>,
     IOpaquePartitionedTridentSpout.Coordinator<Partitions> {
   private static final Logger logger = LoggerFactory.getLogger(Coordinator.class);
-  private final EventHubSpoutConfig spoutConfig;
+  private final EventHubConfig spoutConfig;
   Partitions partitions;
   
-  public Coordinator(EventHubSpoutConfig spoutConfig) {
+  public Coordinator(EventHubConfig spoutConfig) {
     this.spoutConfig = spoutConfig;
   }
 

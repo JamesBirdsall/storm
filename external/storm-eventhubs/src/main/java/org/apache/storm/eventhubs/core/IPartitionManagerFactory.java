@@ -22,15 +22,12 @@ package org.apache.storm.eventhubs.core;
 
 import java.io.Serializable;
 
-import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 import org.apache.storm.eventhubs.state.IStateStore;
 
 /**
  * An interface of factory method to create IPartitionManager
  */
 public interface IPartitionManagerFactory extends Serializable {
-  IPartitionManager create(EventHubSpoutConfig spoutConfig,
-      String partitionId,
-      IStateStore stateStore,
-      IEventHubReceiver receiver);
+    IPartitionManager create(EventHubConfig paramEventHubConfig,
+        String partitionId, IStateStore paramStateStore, IEventHubReceiver paramEventHubReceiver);
 }

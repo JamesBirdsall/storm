@@ -18,7 +18,6 @@
 package org.apache.storm.eventhubs.core;
 
 import org.apache.storm.eventhubs.spout.EventDataWrap;
-import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 import org.apache.storm.eventhubs.state.IStateStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +36,7 @@ public class PartitionManager extends SimplePartitionManager {
   private final TreeSet<EventDataWrap> toResend;
 
   public PartitionManager(
-    EventHubSpoutConfig spoutConfig,
+    EventHubConfig spoutConfig,
     String partitionId,
     IStateStore stateStore,
     IEventHubReceiver receiver) {

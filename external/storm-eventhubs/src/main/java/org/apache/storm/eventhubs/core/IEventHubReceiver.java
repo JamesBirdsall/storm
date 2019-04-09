@@ -17,21 +17,20 @@
  *******************************************************************************/
 package org.apache.storm.eventhubs.core;
 
-import com.microsoft.eventhubs.client.EventHubException;
+import com.microsoft.azure.eventhubs.EventData;
+import com.microsoft.azure.servicebus.ServiceBusException;
 
+import java.io.IOException;
 import java.util.Map;
 
-import org.apache.storm.eventhubs.spout.EventDataWrap;
-
 public interface IEventHubReceiver {
+    void open(IEventFilter paramIEventFilter) throws IOException, ServiceBusException;
 
-  void open(String offset) throws EventHubException;
+    void close();
 
-  void close();
+    boolean isOpen();
 
-  boolean isOpen();
+    Iterable<EventData> receive();
 
-  EventDataWrap receive();
-
-  Map getMetricsData();
+    Map<String, Object> getMetricsData();
 }

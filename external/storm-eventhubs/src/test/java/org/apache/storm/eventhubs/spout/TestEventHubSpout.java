@@ -23,6 +23,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.storm.eventhubs.core.EventHubConfig;
+
 
 public class TestEventHubSpout {
 
@@ -36,7 +38,7 @@ public class TestEventHubSpout {
   
   @Test
   public void testSpoutConfig() {
-    EventHubSpoutConfig conf = new EventHubSpoutConfig("username", "pas\\s+w/ord",
+    EventHubConfig conf = new EventHubConfig("username", "pas\\s+w/ord",
         "namespace", "entityname", 16);
     conf.setZkConnectionString("zookeeper");
     conf.setCheckpointIntervalInSeconds(1);
