@@ -15,14 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.apache.storm.eventhubs.bolt;
+package org.apache.storm.eventhubs.core;
 
-import java.io.Serializable;
-import org.apache.storm.tuple.Tuple;
+import java.util.List;
 
-/**
- * Serialize a tuple to a byte array to be sent to EventHubs
- */
-public interface IEventDataFormat extends Serializable {
-  public byte[] serialize(Tuple tuple);
+public interface IPartitionCoordinator {
+
+  List<IPartitionManager> getMyPartitionManagers();
+
+  IPartitionManager getPartitionManager(String partitionId);
 }

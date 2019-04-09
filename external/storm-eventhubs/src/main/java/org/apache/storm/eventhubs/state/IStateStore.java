@@ -15,23 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.apache.storm.eventhubs.spout;
+package org.apache.storm.eventhubs.state;
 
-public class EventHubSpoutException extends Exception {
+import java.io.Serializable;
 
-  public EventHubSpoutException() {
-    super();
-  }
+public interface IStateStore extends Serializable {
 
-  public EventHubSpoutException(String message) {
-    super(message);
-  }
+  public void open();
 
-  public EventHubSpoutException(Throwable cause) {
-    super(cause);
-  }
+  public void close();
 
-  public EventHubSpoutException(String message, Throwable cause) {
-    super(message, cause);
-  }
+  public void saveData(String path, String data);
+
+  public String readData(String path);
 }

@@ -1,4 +1,4 @@
-package org.apache.storm.eventhubs.spout;
+package org.apache.storm.eventhubs.format;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import java.io.ObjectOutputStream;
 /**
  * Created by rabaner on 3/22/2017.
  */
-public class Serializedeserializeutil {
+public class SerializeDeserializeUtil {
 
     public static byte[] serialize(Object obj) throws IOException {
         try(ByteArrayOutputStream b = new ByteArrayOutputStream()){

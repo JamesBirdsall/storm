@@ -17,6 +17,10 @@
  *******************************************************************************/
 package org.apache.storm.eventhubs.spout;
 
+import org.apache.storm.eventhubs.core.IEventHubReceiver;
+import org.apache.storm.eventhubs.core.IEventHubReceiverFactory;
+import org.apache.storm.eventhubs.core.MessageId;
+import org.apache.storm.eventhubs.state.IStateStore;
 import org.apache.storm.spout.SpoutOutputCollector;
 
 /**

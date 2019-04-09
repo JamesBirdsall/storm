@@ -18,9 +18,12 @@
 /**
  * 
  */
-package org.apache.storm.eventhubs.spout;
+package org.apache.storm.eventhubs.core;
 
 import java.io.Serializable;
+
+import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
+import org.apache.storm.eventhubs.state.IStateStore;
 
 /**
  * An interface of factory method to create IPartitionManager

@@ -18,6 +18,12 @@
 package org.apache.storm.eventhubs.trident;
 
 import com.microsoft.eventhubs.client.Constants;
+
+import org.apache.storm.eventhubs.core.EventHubReceiverImpl;
+import org.apache.storm.eventhubs.core.IEventHubReceiver;
+import org.apache.storm.eventhubs.core.IEventHubReceiverFactory;
+import org.apache.storm.eventhubs.core.Partition;
+import org.apache.storm.eventhubs.core.Partitions;
 import org.apache.storm.eventhubs.spout.*;
 import org.apache.storm.trident.operation.TridentCollector;
 import org.apache.storm.trident.spout.IPartitionedTridentSpout;

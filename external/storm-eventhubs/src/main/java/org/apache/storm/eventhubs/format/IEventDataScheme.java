@@ -15,42 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.apache.storm.eventhubs.spout;
+package org.apache.storm.eventhubs.format;
 
-public class MessageId {
+import com.microsoft.azure.eventhubs.EventData;
+import org.apache.storm.tuple.Fields;
 
-  private final String partitionId;
-  private final String offset;
-  private final long sequenceNumber;
+import java.io.Serializable;
+import java.util.List;
 
-  public MessageId(
-    String partitionId,
-    String offset,
-    long sequenceNumber) {
-    this.partitionId = partitionId;
-    this.offset = offset;
-    this.sequenceNumber = sequenceNumber;
-  }
+public interface IEventDataScheme extends Serializable {
 
-  public static MessageId create(String partitionId, String offset, long sequenceNumber) {
-    return new MessageId(partitionId, offset, sequenceNumber);
-  }
+  /**
+   * Deserialize an AMQP Message into a Tuple.
+   *
+   * @see #getOutputFields() for the list of fields the tuple will contain.
+   *
+   * @param eventData The EventData to Deserialize.
+   * @return A tuple containing the deserialized fields of the message.
+   */
+  List<Object> deserialize(EventData eventData);
 
-  public String getPartitionId() {
-    return this.partitionId;
-  }
-
-  public String getOffset() {
-    return this.offset;
-  }
-
-  public Long getSequenceNumber() {
-    return this.sequenceNumber;
-  }
-  
-  @Override
-  public String toString() {
-    return String.format("PartitionId: %s, Offset: %s, SequenceNumber: %s",
-      this.partitionId, this.offset, this.sequenceNumber);
-  }
+  /**
+   * Retrieve the Fields that are present on tuples created by this object.
+   *
+   * @return The Fields that are present on tuples created by this object.
+   */
+  Fields getOutputFields();
 }

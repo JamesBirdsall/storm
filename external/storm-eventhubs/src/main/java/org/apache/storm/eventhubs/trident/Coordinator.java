@@ -22,7 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import org.apache.storm.trident.spout.IOpaquePartitionedTridentSpout;
 import org.apache.storm.trident.spout.IPartitionedTridentSpout;
-
+import org.apache.storm.eventhubs.core.Partition;
+import org.apache.storm.eventhubs.core.Partitions;
 import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 
 public class Coordinator implements IPartitionedTridentSpout.Coordinator<Partitions>,

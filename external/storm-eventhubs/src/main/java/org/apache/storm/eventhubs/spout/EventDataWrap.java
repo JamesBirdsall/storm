@@ -17,6 +17,8 @@
  *******************************************************************************/
 package org.apache.storm.eventhubs.spout;
 
+import org.apache.storm.eventhubs.core.MessageId;
+
 import com.microsoft.azure.eventhubs.EventData;
 
 public class EventDataWrap implements Comparable<EventDataWrap> {

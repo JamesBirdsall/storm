@@ -19,6 +19,18 @@ package org.apache.storm.eventhubs.spout;
 
 import com.google.common.base.Strings;
 import org.apache.storm.Config;
+import org.apache.storm.eventhubs.core.EventHubReceiverImpl;
+import org.apache.storm.eventhubs.core.IEventHubReceiver;
+import org.apache.storm.eventhubs.core.IEventHubReceiverFactory;
+import org.apache.storm.eventhubs.core.IPartitionCoordinator;
+import org.apache.storm.eventhubs.core.IPartitionManager;
+import org.apache.storm.eventhubs.core.IPartitionManagerFactory;
+import org.apache.storm.eventhubs.core.MessageId;
+import org.apache.storm.eventhubs.core.PartitionManager;
+import org.apache.storm.eventhubs.core.StaticPartitionCoordinator;
+import org.apache.storm.eventhubs.format.IEventDataScheme;
+import org.apache.storm.eventhubs.state.IStateStore;
+import org.apache.storm.eventhubs.state.ZookeeperStateStore;
 import org.apache.storm.metric.api.IMetric;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.TopologyContext;

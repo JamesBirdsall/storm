@@ -19,7 +19,7 @@ package org.apache.storm.eventhubs.trident;
 
 import java.io.Serializable;
 
-import org.apache.storm.eventhubs.spout.IEventHubReceiver;
+import org.apache.storm.eventhubs.core.IEventHubReceiver;
 
 public interface ITridentPartitionManagerFactory extends Serializable {
   ITridentPartitionManager create(IEventHubReceiver receiver);

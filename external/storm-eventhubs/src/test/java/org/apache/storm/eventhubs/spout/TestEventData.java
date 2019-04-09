@@ -23,6 +23,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
+import org.apache.storm.eventhubs.core.MessageId;
+
 public class TestEventData {
 
   @Before

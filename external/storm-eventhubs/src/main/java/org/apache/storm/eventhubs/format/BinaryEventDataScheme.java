@@ -15,9 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.apache.storm.eventhubs.spout;
+package org.apache.storm.eventhubs.format;
 
 import com.microsoft.azure.eventhubs.EventData;
+
+import org.apache.storm.eventhubs.core.FieldConstants;
 import org.apache.storm.tuple.Fields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +48,7 @@ public class BinaryEventDataScheme implements IEventDataScheme {
 			messageData =  eventData.getBytes();
 		else if(eventData.getObject()!=null) {
 			try {
-				messageData = Serializedeserializeutil.serialize(eventData.getObject());
+				messageData = SerializeDeserializeUtil.serialize(eventData.getObject());
 			}catch (IOException e){
 				logger.error("Failed to serialize object"+e.toString());
 			}

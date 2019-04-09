@@ -24,6 +24,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.storm.eventhubs.format.IEventDataScheme;
+import org.apache.storm.eventhubs.format.StringEventDataScheme;
+
 public class EventHubSpoutConfig implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -18,6 +18,9 @@
 package org.apache.storm.eventhubs.bolt;
 
 import com.microsoft.azure.servicebus.ConnectionStringBuilder;
+
+import org.apache.storm.eventhubs.format.DefaultEventDataFormat;
+import org.apache.storm.eventhubs.format.IEventDataFormat;
 import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 
 import java.io.Serializable;

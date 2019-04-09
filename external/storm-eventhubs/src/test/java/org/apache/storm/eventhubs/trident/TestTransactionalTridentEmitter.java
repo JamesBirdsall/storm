@@ -24,11 +24,11 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
+import org.apache.storm.eventhubs.core.IEventHubReceiver;
+import org.apache.storm.eventhubs.core.IEventHubReceiverFactory;
+import org.apache.storm.eventhubs.core.Partition;
 import org.apache.storm.eventhubs.spout.EventHubReceiverMock;
 import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
-import org.apache.storm.eventhubs.spout.IEventHubReceiver;
-import org.apache.storm.eventhubs.spout.IEventHubReceiverFactory;
 
 public class TestTransactionalTridentEmitter {
   private TransactionalTridentEventHubEmitter emitter;

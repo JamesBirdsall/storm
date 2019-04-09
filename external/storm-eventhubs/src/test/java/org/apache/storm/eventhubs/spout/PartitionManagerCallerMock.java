@@ -17,6 +17,10 @@
  *******************************************************************************/
 package org.apache.storm.eventhubs.spout;
 
+import org.apache.storm.eventhubs.core.IPartitionManager;
+import org.apache.storm.eventhubs.core.PartitionManager;
+import org.apache.storm.eventhubs.state.IStateStore;
+
 /**
  * This mock exercises PartitionManager
  */

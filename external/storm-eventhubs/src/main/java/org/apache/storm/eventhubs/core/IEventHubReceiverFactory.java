@@ -15,17 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.apache.storm.eventhubs.spout;
+/**
+ * 
+ */
+package org.apache.storm.eventhubs.core;
 
 import java.io.Serializable;
 
-public interface IStateStore extends Serializable {
+import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 
-  public void open();
-
-  public void close();
-
-  public void saveData(String path, String data);
-
-  public String readData(String path);
+/**
+ * An abstract factory to generate EventHubReceiver
+ */
+public interface IEventHubReceiverFactory extends Serializable {
+  IEventHubReceiver create(EventHubSpoutConfig config, String partitionId);
 }

@@ -19,9 +19,10 @@ package org.apache.storm.eventhubs.trident;
 
 import com.microsoft.eventhubs.client.Constants;
 import com.microsoft.eventhubs.client.EventHubException;
+
+import org.apache.storm.eventhubs.core.IEventHubReceiver;
 import org.apache.storm.eventhubs.spout.EventDataWrap;
 import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
-import org.apache.storm.eventhubs.spout.IEventHubReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

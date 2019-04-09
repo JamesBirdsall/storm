@@ -15,25 +15,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package org.apache.storm.eventhubs.trident;
+package org.apache.storm.eventhubs.format;
 
-import java.io.Serializable;
-import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
-import org.apache.storm.trident.spout.ISpoutPartition;
+import org.apache.storm.tuple.Tuple;
 
 /**
- * Represents an EventHub partition
+ * A default implementation of IEventDataFormat that converts the tuple
+ * into a delimited string.
  */
-public class Partition implements ISpoutPartition, Serializable {
+public class DefaultEventDataFormat implements IEventDataFormat {
   private static final long serialVersionUID = 1L;
-  String partitionId;
+  private String delimiter = ",";
   
-  public Partition(EventHubSpoutConfig config, String partitionId) {
-    this.partitionId = partitionId;
+  public DefaultEventDataFormat withFieldDelimiter(String delimiter) {
+    this.delimiter = delimiter;
+    return this;
   }
-  
+
   @Override
-  public String getId() {
-    return partitionId;
+  public byte[] serialize(Tuple tuple) {
+    StringBuilder sb = new StringBuilder();
+    for(Object obj : tuple.getValues()) {
+      if(sb.length() != 0) {
+        sb.append(delimiter);
+      }
+      sb.append(obj.toString());
+    }
+    return sb.toString().getBytes();
   }
+
 }

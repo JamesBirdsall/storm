@@ -22,6 +22,9 @@ import com.microsoft.eventhubs.client.EventHubException;
 
 import java.util.Map;
 
+import org.apache.storm.eventhubs.core.IEventHubReceiver;
+import org.apache.storm.eventhubs.core.MessageId;
+
 /**
  * A mock receiver that emits fake data with offset starting from given offset
  * and increase by 1 each time.
