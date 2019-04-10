@@ -31,6 +31,8 @@ public interface IEventHubReceiver {
     boolean isOpen();
 
     Iterable<EventData> receive();
+    
+    Iterable<EventData> receive(int paramCount);
 
     Map<String, Object> getMetricsData();
 }
