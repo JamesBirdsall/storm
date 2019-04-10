@@ -128,6 +128,14 @@ public class EventHubConfig implements Serializable {
     	this.enqueueTimeFilter = enqueueTimeFilter;
     }
 
+    public String getConnectionString() {
+      return this.connectionString;
+    }
+    
+    public void setConnectionString(String connectionString) {
+      this.connectionString = connectionString;
+    }    
+    
     public String getTopologyName() {
         return this.topologyName;
     }
