@@ -21,127 +21,109 @@ import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventhubs.EventHubClient;
 import com.microsoft.azure.eventhubs.PartitionReceiver;
 import com.microsoft.azure.servicebus.ServiceBusException;
-import com.microsoft.eventhubs.client.EventHubException;
 
-import org.apache.storm.eventhubs.spout.EventDataWrap;
 import org.apache.storm.metric.api.CountMetric;
 import org.apache.storm.metric.api.MeanReducer;
 import org.apache.storm.metric.api.ReducedMetric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public class EventHubReceiverImpl implements IEventHubReceiver {
-  private static final Logger logger = LoggerFactory.getLogger(EventHubReceiverImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(EventHubReceiverImpl.class);
 
-  private final String connectionString;
-  private final String entityName;
-  private final String partitionId;
-  private final String consumerGroupName;
+    private final EventHubConfig eventHubConfig;
 
-  private PartitionReceiver receiver;
-  private EventHubClient ehClient=null;
-  private ReducedMetric receiveApiLatencyMean;
-  private CountMetric receiveApiCallCount;
-  private CountMetric receiveMessageCount;
+    private final String partitionId;
+    private PartitionReceiver receiver;
+    private EventHubClient ehClient;
 
-  public EventHubReceiverImpl(EventHubConfig config, String partitionId) {
-    this.connectionString = config.getConnectionString();
-    this.entityName = config.getEntityPath();
-    this.partitionId = partitionId;
-    this.consumerGroupName = config.getConsumerGroupName();
-    receiveApiLatencyMean = new ReducedMetric(new MeanReducer());
-    receiveApiCallCount = new CountMetric();
-    receiveMessageCount = new CountMetric();
-  }
+    private ReducedMetric receiveApiLatencyMean;
+    private CountMetric receiveApiCallCount;
+    private CountMetric receiveMessageCount;
 
-  @Override
-  public void open(String offset) throws EventHubException {
-    logger.info("creating eventhub receiver: partitionId=" + partitionId +
-            ", offset=" + offset);
-    long start = System.currentTimeMillis();
-    try {
-      ehClient = EventHubClient.createFromConnectionStringSync(connectionString);
-      receiver = ehClient.createEpochReceiverSync(
-              consumerGroupName,
-              partitionId,
-              offset,
-              false,
-              1);
-    }catch (Exception e){
-      logger.info("Exception in creating EventhubClient"+e.toString());
+    public EventHubReceiverImpl(EventHubConfig config, String partitionId) {
+        this.partitionId = partitionId;
+        this.eventHubConfig = config;
+    
+        receiveApiLatencyMean = new ReducedMetric(new MeanReducer());
+        receiveApiCallCount = new CountMetric();
+        receiveMessageCount = new CountMetric();
     }
-    long end = System.currentTimeMillis();
-    logger.info("created eventhub receiver, time taken(ms): " + (end-start));
-  }
 
-  @Override
-  public void close(){
-    if(receiver != null) {
-      try {
-        receiver.close().whenComplete((voidargs,error)->{
-          try{
-            if(error!=null){
-              logger.error("Exception during receiver close phase"+error.toString());
-            }
-            ehClient.closeSync();
-          }catch (Exception e){
-            logger.error("Exception during ehclient close phase"+e.toString());
-          }
-        }).get();
-      }catch (InterruptedException e){
-        logger.error("Exception occured during close phase"+e.toString());
-      }catch (ExecutionException e){
-        logger.error("Exception occured during close phase"+e.toString());
-      }
-      logger.info("closed eventhub receiver: partitionId=" + partitionId );
-      receiver = null;
-      ehClient =  null;
+    @Override
+    public void open(IEventFilter filter) throws ServiceBusException, IOException {
+        long start = System.currentTimeMillis();
+        logger.debug(String.format("Creating EventHub Client: partitionId: %s, filter value: %s, prefetchCount:%d",
+        	    this.partitionId, filter.toString(), this.eventHubConfig.getPrefetchCount()));
+    
+        this.ehClient = EventHubClient.createFromConnectionStringSync(this.eventHubConfig.getConnectionString());
+        this.receiver = PartitionReceiverFactory.createReceiver(this.ehClient, filter, this.eventHubConfig,
+                this.partitionId);
+        this.receiver.setPrefetchCount(this.eventHubConfig.getPrefetchCount());
+        logger.info("created eventhub receiver, time taken(ms): " + (System.currentTimeMillis() - start));
     }
-  }
 
-
-  @Override
-  public boolean isOpen() {
-    return (receiver != null);
-  }
-
-  @Override
-  public EventDataWrap receive() {
-    long start = System.currentTimeMillis();
-    Iterable<EventData> receivedEvents=null;
-    /*Get one message at a time for backward compatibility behaviour*/
-    try {
-      receivedEvents = receiver.receiveSync(1);
-    }catch (ServiceBusException e){
-      logger.error("Exception occured during receive"+e.toString());
+    @Override
+    public void close() {
+        if (this.receiver != null) {
+	        try {
+	            this.receiver.closeSync();
+	        } catch (ServiceBusException e) {
+	    	    logger.error("Exception during receiver close phase " + e.toString());
+	        }
+	        this.receiver = null;
+	    }
+		if (this.ehClient != null) {
+			try {
+				this.ehClient.closeSync();
+			} catch (ServiceBusException e) {
+				logger.error("Exception during ehclient close phase " + e.toString());
+			}
+			this.ehClient =  null;
+		}
+	    logger.info("closed eventhub receiver: partitionId=" + partitionId);
     }
-    long end = System.currentTimeMillis();
-    long millis = (end - start);
-    receiveApiLatencyMean.update(millis);
-    receiveApiCallCount.incr();
 
-    if (receivedEvents == null || receivedEvents.spliterator().getExactSizeIfKnown() == 0) {
-      return null;
+
+    @Override
+    public boolean isOpen() {
+        return (this.receiver != null);
     }
-    receiveMessageCount.incr();
-    EventData receivedEvent = receivedEvents.iterator().next();
-    MessageId messageId = new MessageId(partitionId,
-            receivedEvent.getSystemProperties().getOffset(),
-            receivedEvent.getSystemProperties().getSequenceNumber());
+  
+    @Override
+    public Iterable<EventData> receive() {
+	    return receive(this.eventHubConfig.getReceiveEventsMaxCount());
+    }
 
-    return EventDataWrap.create(receivedEvent,messageId);
-  }
+    @Override
+    public Iterable<EventData> receive(int batchSize) {
+        long start = System.currentTimeMillis();
+        Iterable<EventData> receivedEvents = null;
+    
+        /* Get one message at a time for backward compatibility behaviour */
+        try {
+            receivedEvents = receiver.receiveSync(1);
+        } catch (ServiceBusException e) {
+            logger.error("Exception occured during receive" + e.toString());
+        }
+        long end = System.currentTimeMillis();
+        long millis = (end - start);
+        this.receiveApiLatencyMean.update(millis);
+        this.receiveApiCallCount.incr();
+        this.receiveMessageCount.incr(); // not in the JAR
+        return receivedEvents;
+    }
 
-  @Override
-  public Map getMetricsData() {
-    Map ret = new HashMap();
-    ret.put(partitionId + "/receiveApiLatencyMean", receiveApiLatencyMean.getValueAndReset());
-    ret.put(partitionId + "/receiveApiCallCount", receiveApiCallCount.getValueAndReset());
-    ret.put(partitionId + "/receiveMessageCount", receiveMessageCount.getValueAndReset());
-    return ret;
-  }
+    @Override
+    public Map<String, Object> getMetricsData() {
+        Map<String, Object> ret = new HashMap<String, Object>();
+        ret.put(this.partitionId + "/receiveApiLatencyMean", receiveApiLatencyMean.getValueAndReset());
+        ret.put(this.partitionId + "/receiveApiCallCount", receiveApiCallCount.getValueAndReset());
+        ret.put(this.partitionId + "/receiveMessageCount", receiveMessageCount.getValueAndReset());
+        return ret;
+    }
 }
