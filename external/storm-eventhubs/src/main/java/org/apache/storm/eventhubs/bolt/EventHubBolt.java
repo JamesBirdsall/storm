@@ -96,15 +96,19 @@ public class EventHubBolt extends BaseRichBolt {
 			if (this.sender != null) {
 				this.sender.closeSync();
 			}
-			if (this.ehClient != null) {
-				this.ehClient.closeSync();
-			}
-			logger.info("Eventhub Bolt cleaned up");
-			sender = null;
-			ehClient =  null;
+			this.sender = null;
 		} catch (ServiceBusException e) {
 			logger.error("Exception occured during cleanup phase" + e.toString());
 		}
+		try {
+			if (this.ehClient != null) {
+				this.ehClient.closeSync();
+			}
+			this.ehClient =  null;
+		} catch (ServiceBusException e) {
+			logger.error("Exception occured during cleanup phase" + e.toString());
+		}
+		logger.info("Eventhub Bolt cleaned up");
 	}
 
 	@Override
