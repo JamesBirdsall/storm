@@ -31,40 +31,38 @@ import org.apache.storm.trident.topology.TransactionAttempt;
 /**
  * A thin wrapper of TransactionalTridentEventHubEmitter for OpaqueTridentEventHubSpout
  */
-public class OpaqueTridentEventHubEmitter implements IOpaquePartitionedTridentSpout.Emitter<Partitions, Partition, Map> {
-  private final TransactionalTridentEventHubEmitter transactionalEmitter;
-  public OpaqueTridentEventHubEmitter(EventHubConfig spoutConfig) {
-    transactionalEmitter = new TransactionalTridentEventHubEmitter(spoutConfig);
-  }
+public class OpaqueTridentEventHubEmitter
+        implements IOpaquePartitionedTridentSpout.Emitter<Partitions, Partition, Map> {
+    private final TransactionalTridentEventHubEmitter transactionalEmitter;
+    
+    public OpaqueTridentEventHubEmitter(EventHubConfig spoutConfig) {
+        this.transactionalEmitter = new TransactionalTridentEventHubEmitter(spoutConfig);
+    }
   
-  public OpaqueTridentEventHubEmitter(EventHubConfig spoutConfig,
-      int batchSize,
-      ITridentPartitionManagerFactory pmFactory,
-      IEventHubReceiverFactory recvFactory) {
-    transactionalEmitter = new TransactionalTridentEventHubEmitter(spoutConfig,
-        batchSize,
-        pmFactory,
-        recvFactory);
-  }
+    public OpaqueTridentEventHubEmitter(EventHubConfig spoutConfig, int batchSize,
+            ITridentPartitionManagerFactory pmFactory, IEventHubReceiverFactory recvFactory) {
+        this.transactionalEmitter = new TransactionalTridentEventHubEmitter(spoutConfig,
+                batchSize, pmFactory, recvFactory);
+    }
 
-  @Override
-  public void close() {
-    transactionalEmitter.close();
-  }
+    @Override
+    public void close() {
+        this.transactionalEmitter.close();
+    }
 
-  @Override
-  public Map emitPartitionBatch(TransactionAttempt attempt, TridentCollector collector,
-      Partition partition, Map meta) {
-    return transactionalEmitter.emitPartitionBatchNew(attempt, collector, partition, meta);
-  }
+    @Override
+    public Map emitPartitionBatch(TransactionAttempt attempt, TridentCollector collector,
+            Partition partition, Map meta) {
+        return this.transactionalEmitter.emitPartitionBatchNew(attempt, collector, partition, meta);
+    }
 
-  @Override
-  public List<Partition> getOrderedPartitions(Partitions partitions) {
-    return transactionalEmitter.getOrderedPartitions(partitions);
-  }
+    @Override
+    public List<Partition> getOrderedPartitions(Partitions partitions) {
+        return transactionalEmitter.getOrderedPartitions(partitions);
+    }
 
-  @Override
-  public void refreshPartitions(List<Partition> partitionList) {
-    transactionalEmitter.refreshPartitions(partitionList);
-  }
+    @Override
+    public void refreshPartitions(List<Partition> partitionList) {
+        transactionalEmitter.refreshPartitions(partitionList);
+    }
 }

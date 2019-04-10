@@ -30,36 +30,36 @@ import org.apache.storm.trident.spout.IOpaquePartitionedTridentSpout;
 /**
  * Opaque Trident EventHubs Spout
  */
-public class OpaqueTridentEventHubSpout implements IOpaquePartitionedTridentSpout<Partitions, Partition, Map> {
-  private static final long serialVersionUID = 1L;
-  private final IEventDataScheme scheme;
-  private final EventHubConfig spoutConfig;
+public class OpaqueTridentEventHubSpout
+        implements IOpaquePartitionedTridentSpout<Partitions, Partition, Map> {
+    private static final long serialVersionUID = 1L;
+    private final IEventDataScheme scheme;
+    private final EventHubConfig spoutConfig;
 
-  public OpaqueTridentEventHubSpout(EventHubConfig config) {
-    spoutConfig = config;
-    scheme = spoutConfig.getEventDataScheme();
-  }
+    public OpaqueTridentEventHubSpout(EventHubConfig config) {
+        this.spoutConfig = config;
+        this.scheme = this.spoutConfig.getEventDataScheme();
+    }
 
-  @Override
-  public Map<String, Object> getComponentConfiguration() {
-    return null;
-  }
+    @Override
+    public Map<String, Object> getComponentConfiguration() {
+        return null;
+    }
 
-  @Override
-  public IOpaquePartitionedTridentSpout.Coordinator<Partitions> getCoordinator(
-      Map conf, TopologyContext context) {
-    return new org.apache.storm.eventhubs.trident.Coordinator(spoutConfig);
-  }
+    @Override
+    public IOpaquePartitionedTridentSpout.Coordinator<Partitions> getCoordinator(
+            Map conf, TopologyContext context) {
+        return new org.apache.storm.eventhubs.trident.Coordinator(this.spoutConfig);
+    }
 
-  @Override
-  public IOpaquePartitionedTridentSpout.Emitter<Partitions, Partition, Map> getEmitter(
-      Map conf, TopologyContext context) {
-    return new OpaqueTridentEventHubEmitter(spoutConfig);
-  }
+    @Override
+    public IOpaquePartitionedTridentSpout.Emitter<Partitions, Partition, Map> getEmitter(
+            Map conf, TopologyContext context) {
+        return new OpaqueTridentEventHubEmitter(this.spoutConfig);
+    }
 
-  @Override
-  public Fields getOutputFields() {
-    return scheme.getOutputFields();
-  }
-
+    @Override
+    public Fields getOutputFields() {
+        return this.scheme.getOutputFields();
+    }
 }

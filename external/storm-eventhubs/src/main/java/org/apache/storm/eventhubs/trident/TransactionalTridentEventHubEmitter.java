@@ -38,7 +38,7 @@ import java.util.Map;
 
 
 public class TransactionalTridentEventHubEmitter
-    implements IPartitionedTridentSpout.Emitter<Partitions, Partition, Map> {
+    implements IPartitionedTridentSpout.Emitter<Partitions, Partition, Map<String, String>> {
   private static final Logger logger = LoggerFactory.getLogger(TransactionalTridentEventHubEmitter.class);
   private final int batchSize; 
   private final EventHubConfig spoutConfig;

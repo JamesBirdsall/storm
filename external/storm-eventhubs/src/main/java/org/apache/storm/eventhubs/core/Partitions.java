@@ -25,17 +25,18 @@ import java.util.List;
  * Represents all EventHub partitions a spout is receiving messages from.
  */
 public class Partitions implements Serializable {
-  private static final long serialVersionUID = 1L;
-  private List<Partition> partitionList;
-  public Partitions() {
-    partitionList = new ArrayList<Partition>();
-  }
+    private static final long serialVersionUID = 1L;
+    private List<Partition> partitionList;
+    
+    public Partitions() {
+        this.partitionList = new ArrayList<Partition>();
+    }
   
-  public void addPartition(Partition partition) {
-    partitionList.add(partition);
-  }
+    public void addPartition(Partition partition) {
+        this.partitionList.add(partition);
+    }
   
-  public List<Partition> getPartitions() {
-    return partitionList;
-  }
+    public List<Partition> getPartitions() {
+        return this.partitionList;
+    }
 }
