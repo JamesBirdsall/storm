@@ -21,8 +21,6 @@ import com.microsoft.azure.eventhubs.EventHubClient;
 import com.microsoft.azure.servicebus.ConnectionStringBuilder;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.storm.eventhubs.format.IEventDataScheme;
 import org.apache.storm.eventhubs.format.StringEventDataScheme;

@@ -48,7 +48,7 @@ public class OpaqueTridentEventHubSpout
 
     @Override
     public IOpaquePartitionedTridentSpout.Coordinator<Partitions> getCoordinator(
-            Map conf, TopologyContext context) {
+            Map<String, Object> conf, TopologyContext context) {
         return new org.apache.storm.eventhubs.trident.Coordinator(this.spoutConfig);
     }
 

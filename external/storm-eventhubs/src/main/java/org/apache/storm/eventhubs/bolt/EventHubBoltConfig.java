@@ -19,7 +19,6 @@ package org.apache.storm.eventhubs.bolt;
 
 import com.microsoft.azure.servicebus.ConnectionStringBuilder;
 
-import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.FieldConstants;
 import org.apache.storm.eventhubs.format.DefaultEventDataFormat;
 import org.apache.storm.eventhubs.format.IEventDataFormat;
