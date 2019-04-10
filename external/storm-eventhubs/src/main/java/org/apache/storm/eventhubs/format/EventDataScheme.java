@@ -17,18 +17,12 @@
  *******************************************************************************/
 package org.apache.storm.eventhubs.format;
 
-import com.microsoft.azure.eventhubs.EventData;
-
+import org.apache.storm.eventhubs.core.EventHubMessage;
 import org.apache.storm.eventhubs.core.FieldConstants;
 import org.apache.storm.tuple.Fields;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * An Event Data Scheme which deserializes message payload into the Strings. No
@@ -43,30 +37,19 @@ import java.util.Map;
  * {@link BinaryEventDataScheme}.
  */
 public class EventDataScheme implements IEventDataScheme {
-
 	private static final long serialVersionUID = 1L;
-	private static final Logger logger = LoggerFactory.getLogger(EventDataScheme.class);
+	
 	@Override
-	public List<Object> deserialize(EventData eventData) {
+	public List<Object> deserialize(EventHubMessage eventHubMessage) {
 		final List<Object> fieldContents = new ArrayList<Object>();
-		String messageData = "";
-		if(eventData.getBytes()!=null)
-			messageData = new String (eventData.getBytes());
-		else if(eventData.getObject()!=null){
-			try{
-				messageData = new String(SerializeDeserializeUtil.serialize(eventData.getObject()),Charset.defaultCharset());
-			}catch (IOException e){
-				logger.error("Failed to serialize object"+e.toString());
-			}
-		}
-		Map metaDataMap = eventData.getProperties();
+		String messageData = new String(eventHubMessage.getContent());
 		fieldContents.add(messageData);
-		fieldContents.add(metaDataMap);
+		fieldContents.add(eventHubMessage.getApplicationProperties());
 		return fieldContents;
 	}
 
 	@Override
 	public Fields getOutputFields() {
-		return new Fields(FieldConstants.Message, FieldConstants.META_DATA);
+		return new Fields(FieldConstants.MESSAGE_FIELD, FieldConstants.META_DATA_FIELD);
 	}
 }
