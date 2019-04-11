@@ -120,7 +120,7 @@ public class SimplePartitionManager implements IPartitionManager {
 		// "/{prefix}/{topologyName}/{namespace}/{entityPath}/partitions/{partitionId}/state";
 	    String partitionStatePath = String.join("/", new String[] { statePathPrefix, this.config.getTopologyName(),
 	    		this.config.getNamespace(), this.config.getEntityPath(), "partitions", this.partitionId });
-	    logger.info("partition state path: " + partitionStatePath);
+	    logger.debug("partition state path: " + partitionStatePath);
 	    return partitionStatePath;
 	}
   

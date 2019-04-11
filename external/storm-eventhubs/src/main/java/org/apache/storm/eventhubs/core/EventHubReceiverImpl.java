@@ -17,6 +17,7 @@
  *******************************************************************************/
 package org.apache.storm.eventhubs.core;
 
+import com.google.common.collect.Iterables;
 import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.eventhubs.EventHubClient;
 import com.microsoft.azure.eventhubs.PartitionReceiver;
@@ -104,17 +105,20 @@ public class EventHubReceiverImpl implements IEventHubReceiver {
         long start = System.currentTimeMillis();
         Iterable<EventData> receivedEvents = null;
     
-        /* Get one message at a time for backward compatibility behaviour */
         try {
-            receivedEvents = receiver.receiveSync(1);
+            receivedEvents = receiver.receiveSync(batchSize);
+            if (receivedEvents != null) {
+            	logger.debug("Batchsize: " + batchSize + ", Received event count: " +
+            			Iterables.size(receivedEvents));
+            }
         } catch (ServiceBusException e) {
             logger.error("Exception occured during receive" + e.toString());
+            return null;
         }
         long end = System.currentTimeMillis();
         long millis = (end - start);
         this.receiveApiLatencyMean.update(millis);
         this.receiveApiCallCount.incr();
-        this.receiveMessageCount.incr(); // TODO not in the JAR?
         return receivedEvents;
     }
 

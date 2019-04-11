@@ -60,12 +60,14 @@ public class EventHubBolt extends BaseRichBolt {
 	@Override
 	public void prepare(Map<String, Object> config, TopologyContext context, OutputCollector collector) {
 		this.collector = collector;
+		logger.info(String.format("Conn String: %s, PartitionMode %s", this.boltConfig.getConnectionString(),
+				String.valueOf(this.boltConfig.getPartitionMode())));
 		try {
 			this.ehClient = EventHubClient.createFromConnectionStringSync(this.boltConfig.getConnectionString());
 			if (boltConfig.getPartitionMode()) {
 				// We can use the task index (starting from 0) as the partition ID
 				String myPartitionId = String.valueOf(context.getThisTaskIndex());
-			    logger.info("creating sender for " + myPartitionId);
+			    logger.info("Writing to partition id: " + myPartitionId);
 				this.sender = ehClient.createPartitionSenderSync(myPartitionId);
 			}
 		} catch (Exception ex) {
@@ -92,11 +94,12 @@ public class EventHubBolt extends BaseRichBolt {
 
 	@Override
 	public void cleanup() {
+		logger.debug("EventHubBolt cleanup");
 		if (this.sender != null) {
 			try {
 				this.sender.closeSync();
 			} catch (ServiceBusException e) {
-				logger.error("Exception occured during cleanup phase" + e.toString());
+				logger.error("Exception during EventHubBolt cleanup phase" + e.toString());
 			}
 			this.sender = null;
 		}
@@ -104,11 +107,10 @@ public class EventHubBolt extends BaseRichBolt {
 			try {
 				this.ehClient.closeSync();
 			} catch (ServiceBusException e) {
-				logger.error("Exception occured during cleanup phase" + e.toString());
+				logger.error("Exception during EventHubBolt cleanup phase" + e.toString());
 			}
 			this.ehClient =  null;
 		}
-		logger.info("Eventhub Bolt cleaned up");
 	}
 
 	@Override

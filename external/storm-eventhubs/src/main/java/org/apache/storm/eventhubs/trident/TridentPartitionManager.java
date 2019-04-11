@@ -26,6 +26,8 @@ import org.apache.storm.eventhubs.core.IEventHubReceiver;
 import org.apache.storm.eventhubs.core.OffsetFilter;
 import org.apache.storm.eventhubs.core.TimestampFilter;
 import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -33,7 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TridentPartitionManager implements ITridentPartitionManager {
-    private final IEventHubReceiver receiver;
+	private static final Logger logger = LoggerFactory.getLogger(TridentPartitionManager.class);
+	private final IEventHubReceiver receiver;
     private final EventHubSpoutConfig spoutConfig;
     private String lastOffset = FieldConstants.DefaultStartingOffset;
     private String partitionId;
@@ -46,6 +49,7 @@ public class TridentPartitionManager implements ITridentPartitionManager {
   
     @Override
     public void open(String offset) throws IOException, ServiceBusException {
+    	logger.debug("Creating EventHub Client");
         if ((offset == null || offset.equals(FieldConstants.DefaultStartingOffset)) 
                 && spoutConfig.getEnqueueTimeFilter() != 0) {
             this.receiver.open(new TimestampFilter(
