@@ -17,79 +17,77 @@
  *******************************************************************************/
 package org.apache.storm.eventhubs.state;
 
-import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryNTimes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.microsoft.azure.servicebus.StringUtil;
+
 public class ZookeeperStateStore implements IStateStore {
-  private static final long serialVersionUID = 1L;
-  private static final Logger logger = LoggerFactory.getLogger(ZookeeperStateStore.class);
-
-  private final String zookeeperConnectionString;
-  private final CuratorFramework curatorFramework;
+	private static final long serialVersionUID = -995647135239199102L;
+	private static final Logger logger = LoggerFactory.getLogger(ZookeeperStateStore.class);
+	private static final String ZK_LOCAL_URL = "localhost:2181";
+	private final String zookeeperConnectionString;
+	private final CuratorFramework curatorFramework;
   
-  public ZookeeperStateStore(String zookeeperConnectionString) {
-    this(zookeeperConnectionString, 3, 100);
-  }
+	public ZookeeperStateStore(String zookeeperConnectionString) {
+		this(zookeeperConnectionString, 3, 100);
+	}
 
-  public ZookeeperStateStore(String connectionString, int retries, int retryInterval) {
-    if (connectionString == null) {
-      zookeeperConnectionString = "localhost:2181";
-    } else {
-      zookeeperConnectionString = connectionString;
-    }
+	public ZookeeperStateStore(String connectionString, int retries, int retryInterval) {
+		this.zookeeperConnectionString = StringUtil.isNullOrWhiteSpace(connectionString) ?
+				ZK_LOCAL_URL : connectionString;
+		logger.debug("using ZKConnectionString: " + this.zookeeperConnectionString);
 
-    RetryPolicy retryPolicy = new RetryNTimes(retries, retryInterval);
-    curatorFramework = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy);
-  }
+		curatorFramework = CuratorFrameworkFactory.newClient(this.zookeeperConnectionString,
+				new RetryNTimes(retries, retryInterval));
+	}
 
-  @Override
-  public void open() {
-    curatorFramework.start();
-  }
+	@Override
+	public void open() {
+		curatorFramework.start();
+	}
 
-  @Override
-  public void close() {
-    curatorFramework.close();
-  }
+	@Override
+	public void close() {
+		curatorFramework.close();
+	}
 
-  @Override
-  public void saveData(String statePath, String data) {
-    data = data == null ? "" : data;
-    byte[] bytes = data.getBytes();
+	@Override
+	public void saveData(String statePath, String data) {
+		data = StringUtil.isNullOrWhiteSpace(data) ? "" : data;
+		byte[] bytes = data.getBytes();
 
-    try {
-      if (curatorFramework.checkExists().forPath(statePath) == null) {
-        curatorFramework.create().creatingParentsIfNeeded().forPath(statePath, bytes);
-      } else {
-        curatorFramework.setData().forPath(statePath, bytes);
-      }
+		try {
+			if (curatorFramework.checkExists().forPath(statePath) == null) {
+				this.curatorFramework.create().creatingParentsIfNeeded().forPath(statePath, bytes);
+			} else {
+				this.curatorFramework.setData().forPath(statePath, bytes);
+			}
 
-      logger.info(String.format("data was saved. path: %s, data: %s.", statePath, data));
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
+			logger.debug(String.format("data was saved. path: %s, data: %s.", statePath, data));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-  @Override
-  public String readData(String statePath) {
-    try {
-      if (curatorFramework.checkExists().forPath(statePath) == null) {
-        // do we want to throw an exception if path doesn't exist??
-        return null;
-      } else {
-        byte[] bytes = curatorFramework.getData().forPath(statePath);
-        String data = new String(bytes);
+	@Override
+	public String readData(String statePath) {
+		try {
+			if (this.curatorFramework.checkExists().forPath(statePath) == null) {
+				// do we want to throw an exception if path doesn't exist??
+				return null;
+			}
+			byte[] bytes = curatorFramework.getData().forPath(statePath);
+			String data = new String(bytes);
 
-        logger.info(String.format("data was retrieved. path: %s, data: %s.", statePath, data));
+			logger.debug(String.format("data was retrieved. path: %s, data: %s.", statePath, data));
 
-        return data;
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
+			return data;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 }
