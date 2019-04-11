@@ -119,14 +119,15 @@ public class EventHubSpout extends BaseRichSpout {
      * @throws Exception
      */
     // TODO private?
-    public void preparePartitions(Map config, int totalTasks, int taskIndex, SpoutOutputCollector collector)
-		    throws Exception {
+    public void preparePartitions(Map<String, Object> config, int totalTasks, int taskIndex,
+    		SpoutOutputCollector collector) throws Exception {
         this.collector = collector;
         if (this.stateStore == null) {
             String zkEndpointAddress = eventHubSpoutConfig.getZkConnectionString();
             if (StringUtils.isBlank(zkEndpointAddress)) {
                 // use storm's zookeeper servers if not specified.
-                List<String> zkServers = (List<String>)config.get(Config.STORM_ZOOKEEPER_SERVERS);
+                @SuppressWarnings("unchecked")
+				List<String> zkServers = (List<String>)config.get(Config.STORM_ZOOKEEPER_SERVERS);
                 Integer zkPort = ((Number)config.get(Config.STORM_ZOOKEEPER_PORT)).intValue();
                 StringBuilder sb = new StringBuilder();
                 for (String zk : zkServers) {
@@ -155,7 +156,7 @@ public class EventHubSpout extends BaseRichSpout {
     }
 
     @Override
-    public void open(Map config, TopologyContext context, SpoutOutputCollector collector) {
+    public void open(Map<String, Object> config, TopologyContext context, SpoutOutputCollector collector) {
         logger.debug("EventHubSpout start: open()");
         String topologyName = (String)config.get(Config.TOPOLOGY_NAME);
         this.eventHubSpoutConfig.setTopologyName(topologyName);

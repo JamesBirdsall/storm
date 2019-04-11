@@ -31,7 +31,7 @@ import org.apache.storm.trident.spout.IOpaquePartitionedTridentSpout;
  * Opaque Trident EventHubs Spout
  */
 public class OpaqueTridentEventHubSpout
-        implements IOpaquePartitionedTridentSpout<Partitions, Partition, Map> {
+        implements IOpaquePartitionedTridentSpout<Partitions, Partition, Map<String, String>> {
     private static final long serialVersionUID = 1L;
     private final IEventDataScheme scheme;
     private final EventHubSpoutConfig spoutConfig;
@@ -53,8 +53,8 @@ public class OpaqueTridentEventHubSpout
     }
 
     @Override
-    public IOpaquePartitionedTridentSpout.Emitter<Partitions, Partition, Map> getEmitter(
-            Map conf, TopologyContext context) {
+    public IOpaquePartitionedTridentSpout.Emitter<Partitions, Partition, Map<String, String>> getEmitter(
+            Map<String, Object> conf, TopologyContext context) {
         return new OpaqueTridentEventHubEmitter(this.spoutConfig);
     }
 

@@ -32,7 +32,7 @@ import org.apache.storm.trident.topology.TransactionAttempt;
  * A thin wrapper of TransactionalTridentEventHubEmitter for OpaqueTridentEventHubSpout
  */
 public class OpaqueTridentEventHubEmitter
-        implements IOpaquePartitionedTridentSpout.Emitter<Partitions, Partition, Map> {
+        implements IOpaquePartitionedTridentSpout.Emitter<Partitions, Partition, Map<String, String>> {
     private final TransactionalTridentEventHubEmitter transactionalEmitter;
     
     public OpaqueTridentEventHubEmitter(EventHubSpoutConfig spoutConfig) {
@@ -51,8 +51,8 @@ public class OpaqueTridentEventHubEmitter
     }
 
     @Override
-    public Map emitPartitionBatch(TransactionAttempt attempt, TridentCollector collector,
-            Partition partition, Map meta) {
+    public Map<String, String> emitPartitionBatch(TransactionAttempt attempt, TridentCollector collector,
+            Partition partition, Map<String, String> meta) {
         return this.transactionalEmitter.emitPartitionBatchNew(attempt, collector, partition, meta);
     }
 
