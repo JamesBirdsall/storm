@@ -18,6 +18,7 @@
 package org.apache.storm.eventhubs.trident;
 
 import org.apache.storm.eventhubs.core.EventHubReceiverImpl;
+import org.apache.storm.eventhubs.core.FieldConstants;
 import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.EventHubMessage;
 import org.apache.storm.eventhubs.core.IEventHubReceiver;
@@ -140,7 +141,8 @@ public class TransactionalTridentEventHubEmitter
   public Map<String, String> emitPartitionBatchNew(TransactionAttempt attempt, TridentCollector collector,
 		  Partition partition, Map<String, String> meta) {
     ITridentPartitionManager pm = getOrCreatePartitionManager(partition);
-    String offset = (meta != null) ? meta.getOrDefault(NEXT_OFFSET_KEY, "-1") : "-1";
+    String offset = (meta != null) ? meta.getOrDefault(NEXT_OFFSET_KEY, FieldConstants.DefaultStartingOffset) :
+    	FieldConstants.DefaultStartingOffset;
     String nextOffset = offset;
 
     List<EventHubMessage> listEvents = null;

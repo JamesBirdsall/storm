@@ -18,8 +18,8 @@
 package org.apache.storm.eventhubs.core;
 
 import com.google.common.collect.Iterables;
+
 import com.microsoft.azure.eventhubs.EventData;
-import com.microsoft.eventhubs.client.Constants;
 
 import org.apache.storm.eventhubs.state.IStateStore;
 import org.slf4j.Logger;
@@ -36,8 +36,8 @@ public class SimplePartitionManager implements IPartitionManager {
 	protected static final String statePathPrefix = "/eventhubspout";
 
 	protected final IEventHubReceiver receiver;
-	protected String lastOffset = Constants.DefaultStartingOffset;
-	protected String committedOffset = Constants.DefaultStartingOffset;
+	protected String lastOffset = FieldConstants.DefaultStartingOffset;
+	protected String committedOffset = FieldConstants.DefaultStartingOffset;
   
 	protected final EventHubConfig config;
 	protected final String partitionId;
@@ -63,7 +63,7 @@ public class SimplePartitionManager implements IPartitionManager {
 		if ((offset == null) && (this.config.getEnqueueTimeFilter() != 0L)) {
 			filter = new TimestampFilter(Instant.ofEpochMilli(this.config.getEnqueueTimeFilter()));
 		} else {
-			filter = new OffsetFilter((offset == null) ? Constants.DefaultStartingOffset : offset);
+			filter = new OffsetFilter((offset == null) ? FieldConstants.DefaultStartingOffset : offset);
 		}
 
 		this.receiver.open(filter);

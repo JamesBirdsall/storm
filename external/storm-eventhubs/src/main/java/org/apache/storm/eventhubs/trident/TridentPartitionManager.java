@@ -19,9 +19,9 @@ package org.apache.storm.eventhubs.trident;
 
 import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.servicebus.ServiceBusException;
-import com.microsoft.eventhubs.client.Constants;
 
 import org.apache.storm.eventhubs.core.EventHubMessage;
+import org.apache.storm.eventhubs.core.FieldConstants;
 import org.apache.storm.eventhubs.core.IEventHubReceiver;
 import org.apache.storm.eventhubs.core.OffsetFilter;
 import org.apache.storm.eventhubs.core.TimestampFilter;
@@ -35,7 +35,7 @@ import java.util.List;
 public class TridentPartitionManager implements ITridentPartitionManager {
     private final IEventHubReceiver receiver;
     private final EventHubSpoutConfig spoutConfig;
-    private String lastOffset = Constants.DefaultStartingOffset;
+    private String lastOffset = FieldConstants.DefaultStartingOffset;
     private String partitionId;
   
     public TridentPartitionManager(EventHubSpoutConfig spoutConfig, IEventHubReceiver receiver, String partitionId) {
@@ -46,7 +46,7 @@ public class TridentPartitionManager implements ITridentPartitionManager {
   
     @Override
     public void open(String offset) throws IOException, ServiceBusException {
-        if ((offset == null || offset.equals(Constants.DefaultStartingOffset)) 
+        if ((offset == null || offset.equals(FieldConstants.DefaultStartingOffset)) 
                 && spoutConfig.getEnqueueTimeFilter() != 0) {
             this.receiver.open(new TimestampFilter(
                     Instant.ofEpochMilli(this.spoutConfig.getEnqueueTimeFilter())));
