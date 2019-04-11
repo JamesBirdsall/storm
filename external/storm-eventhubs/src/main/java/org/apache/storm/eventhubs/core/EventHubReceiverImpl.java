@@ -114,7 +114,7 @@ public class EventHubReceiverImpl implements IEventHubReceiver {
         long millis = (end - start);
         this.receiveApiLatencyMean.update(millis);
         this.receiveApiCallCount.incr();
-        this.receiveMessageCount.incr(); // not in the JAR
+        this.receiveMessageCount.incr(); // TODO not in the JAR?
         return receivedEvents;
     }
 
