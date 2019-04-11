@@ -19,10 +19,10 @@ package org.apache.storm.eventhubs.trident;
 
 import java.util.Map;
 
-import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.Partition;
 import org.apache.storm.eventhubs.core.Partitions;
 import org.apache.storm.eventhubs.format.IEventDataScheme;
+import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.trident.spout.IPartitionedTridentSpout;
@@ -34,9 +34,9 @@ public class TransactionalTridentEventHubSpout
         implements IPartitionedTridentSpout<Partitions, Partition, Map<String, String>> {
     private static final long serialVersionUID = 1L;
     private final IEventDataScheme scheme;
-    private final EventHubConfig spoutConfig;
+    private final EventHubSpoutConfig spoutConfig;
   
-    public TransactionalTridentEventHubSpout(EventHubConfig config) {
+    public TransactionalTridentEventHubSpout(EventHubSpoutConfig config) {
         this.spoutConfig = config;
         this.scheme = this.spoutConfig.getEventDataScheme();
     }

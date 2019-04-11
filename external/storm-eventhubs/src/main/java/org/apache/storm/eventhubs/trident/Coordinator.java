@@ -19,19 +19,16 @@ package org.apache.storm.eventhubs.trident;
 
 import org.apache.storm.trident.spout.IOpaquePartitionedTridentSpout;
 import org.apache.storm.trident.spout.IPartitionedTridentSpout;
-import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.Partition;
 import org.apache.storm.eventhubs.core.Partitions;
+import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 
 public class Coordinator implements IPartitionedTridentSpout.Coordinator<Partitions>,
         IOpaquePartitionedTridentSpout.Coordinator<Partitions> {
-    private final EventHubConfig spoutConfig;
     private Partitions partitions;
   
-    public Coordinator(EventHubConfig spoutConfig) {
-        this.spoutConfig = spoutConfig;
-        
-        for (int i = 0; i < this.spoutConfig.getPartitionCount(); i++) {
+    public Coordinator(EventHubSpoutConfig spoutConfig) {
+        for (int i = 0; i < spoutConfig.getPartitionCount(); i++) {
         	this.partitions.addPartition(new Partition(String.valueOf(i)));
         }
     }

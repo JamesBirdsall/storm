@@ -21,11 +21,11 @@ import com.microsoft.azure.eventhubs.EventData;
 import com.microsoft.azure.servicebus.ServiceBusException;
 import com.microsoft.eventhubs.client.Constants;
 
-import org.apache.storm.eventhubs.core.EventHubConfig;
 import org.apache.storm.eventhubs.core.EventHubMessage;
 import org.apache.storm.eventhubs.core.IEventHubReceiver;
 import org.apache.storm.eventhubs.core.OffsetFilter;
 import org.apache.storm.eventhubs.core.TimestampFilter;
+import org.apache.storm.eventhubs.spout.EventHubSpoutConfig;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -34,11 +34,11 @@ import java.util.List;
 
 public class TridentPartitionManager implements ITridentPartitionManager {
     private final IEventHubReceiver receiver;
-    private final EventHubConfig spoutConfig;
+    private final EventHubSpoutConfig spoutConfig;
     private String lastOffset = Constants.DefaultStartingOffset;
     private String partitionId;
   
-    public TridentPartitionManager(EventHubConfig spoutConfig, IEventHubReceiver receiver, String partitionId) {
+    public TridentPartitionManager(EventHubSpoutConfig spoutConfig, IEventHubReceiver receiver, String partitionId) {
         this.receiver = receiver;
         this.spoutConfig = spoutConfig;
         this.partitionId = partitionId;
