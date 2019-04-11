@@ -21,18 +21,19 @@
     <parent>
         <artifactId>storm</artifactId>
         <groupId>org.apache.storm</groupId>
-        <version>2.0.0-SNAPSHOT</version>
+        <version>1.2.4-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>storm-eventhubs</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>1.1.0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>storm-eventhubs</name>
     <description>EventHubs Storm Spout</description>
 
     <build>
         <plugins>
+<!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -70,6 +71,7 @@
                     </filters>
                 </configuration>
             </plugin>
+-->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
@@ -90,14 +92,9 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>com.microsoft.eventhubs.client</groupId>
-            <artifactId>eventhubs-client</artifactId>
-            <version>${eventhubs.client.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.microsoft.azure</groupId>
             <artifactId>azure-eventhubs</artifactId>
-            <version>${azure-eventhubs.version}</version>
+            <version>0.14.5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.storm</groupId>
@@ -121,21 +118,6 @@
                     <artifactId>slf4j-log4j12</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.qpid</groupId>
-            <artifactId>qpid-amqp-1-0-client</artifactId>
-            <version>${qpid.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.qpid</groupId>
-            <artifactId>qpid-amqp-1-0-client-jms</artifactId>
-            <version>${qpid.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.qpid</groupId>
-            <artifactId>qpid-amqp-1-0-common</artifactId>
-            <version>${qpid.version}</version>
         </dependency>
     </dependencies>
 </project>
