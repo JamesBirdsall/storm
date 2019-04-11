@@ -17,87 +17,115 @@
  *******************************************************************************/
 package org.apache.storm.eventhubs.core;
 
-import org.apache.storm.eventhubs.spout.EventDataWrap;
 import org.apache.storm.eventhubs.state.IStateStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.microsoft.azure.eventhubs.EventData;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
 public class PartitionManager extends SimplePartitionManager {
-  private static final Logger logger = LoggerFactory.getLogger(PartitionManager.class);
-  private final int ehReceiveTimeoutMs = 5000;
+	private static final Logger logger = LoggerFactory.getLogger(PartitionManager.class);
 
-  //all sent events are stored in pending
-  private final Map<String, EventDataWrap> pending;
-  //all failed events are put in toResend, which is sorted by event's offset
-  private final TreeSet<EventDataWrap> toResend;
+	// All sent events are stored in pending
+	private final Map<String, EventHubMessage> pending;
+	// All failed events are put in toResend, which is sorted by event's offset
+	private final TreeSet<EventHubMessage> toResend;
+	private final TreeSet<EventHubMessage> waitingToEmit;
 
-  public PartitionManager(
-    EventHubConfig spoutConfig,
-    String partitionId,
-    IStateStore stateStore,
-    IEventHubReceiver receiver) {
-
-    super(spoutConfig, partitionId, stateStore, receiver);
+	public PartitionManager(EventHubConfig spoutConfig, String partitionId, IStateStore stateStore,
+			IEventHubReceiver receiver) {
+		super(spoutConfig, partitionId, stateStore, receiver);
     
-    this.pending = new LinkedHashMap<String, EventDataWrap>();
-    this.toResend = new TreeSet<EventDataWrap>();
-  }
+		this.pending = new LinkedHashMap<String, EventHubMessage>();
+		this.toResend = new TreeSet<EventHubMessage>();
+		this.waitingToEmit = new TreeSet<EventHubMessage>();
+	}
+	
+	private void fill()
+	{
+	    Iterable<EventData> receivedEvents = this.receiver.receive(this.config.getReceiveEventsMaxCount());
+	    if ((receivedEvents == null) || (receivedEvents.spliterator().getExactSizeIfKnown() == 0L))
+	    {
+	    	logger.debug("No messages received from EventHub.");
+	    	return;
+	    }
+	    String startOffset = null;
+	    String endOffset = null;
+	    for (EventData ed : receivedEvents)
+	    {
+	    	EventHubMessage ehm = new EventHubMessage(ed, this.partitionId);
+	    	startOffset = startOffset == null ? ehm.getOffset() : startOffset;
+	    	endOffset = ehm.getOffset();
+	    	this.waitingToEmit.add(ehm);
+	    }
+	    logger.debug("Received Messages Start Offset: " + startOffset + ", End Offset: " + endOffset);
+	}
+	
+	@Override
+	public EventHubMessage receive() {
+		logger.debug("Retrieving messages for partition: " + this.partitionId);
+		
+		int countToRetrieve = this.pending.size() - this.config.getMaxPendingMsgsPerPartition();
+		if (countToRetrieve >= 0) {
+			logger.debug("Pending queue has more than " + this.config.getMaxPendingMsgsPerPartition() +
+					" messages. No new events will be retrieved from EventHub.");
+			return null;
+		}
 
-  @Override
-  public EventDataWrap receive() {
-    if(pending.size() >= config.getMaxPendingMsgsPerPartition()) {
-      return null;
-    }
+    	EventHubMessage ehm = null;
+    	if (!this.toResend.isEmpty()) {
+    	    ehm = toResend.pollFirst();
+    	} else {
+    	    if (this.waitingToEmit.isEmpty()) {
+    	        fill();
+    	    }
+    	    ehm = this.waitingToEmit.pollFirst();
+    	}
 
-    EventDataWrap eventDatawrap;
-    if (toResend.isEmpty()) {
-      eventDatawrap = receiver.receive();
-    } else {
-      eventDatawrap = toResend.pollFirst();
-    }
+    	if (ehm == null) {
+    		logger.debug("No messages pending or waiting for reprocessing.");
+    		return null;
+    	}
+    	
+    	this.lastOffset = ehm.getOffset();
+    	this.pending.put(this.lastOffset, ehm);
 
-    if (eventDatawrap != null) {
-      lastOffset = eventDatawrap.getMessageId().getOffset();
-      pending.put(lastOffset, eventDatawrap);
-    }
+    	return ehm;
+	}
 
-    return eventDatawrap;
-  }
+	@Override
+	public void ack(String offset) {
+		this.pending.remove(offset);
+	}
 
-  @Override
-  public void ack(String offset) {
-    pending.remove(offset);
-  }
-
-  @Override
-  public void fail(String offset) {
-    logger.warn("fail on " + offset);
-    EventDataWrap eventDataWrap = pending.remove(offset);
-    toResend.add(eventDataWrap);
-  }
+	@Override
+	public void fail(String offset) {
+		logger.warn("fail on " + offset);
+		this.toResend.add(this.pending.remove(offset));
+	}
   
-  @Override
-  protected String getCompletedOffset() {
-    String offset = null;
+	@Override
+	protected String getCompletedOffset() {
+		String offset = null;
     
-    if(pending.size() > 0) {
-      //find the smallest offset in pending list
-      offset = pending.keySet().iterator().next();
-    }
-    if(toResend.size() > 0) {
-      //find the smallest offset in toResend list
-      String offset2 = toResend.first().getMessageId().getOffset();
-      if(offset == null || offset2.compareTo(offset) < 0) {
-        offset = offset2;
-      }
-    }
-    if(offset == null) {
-      offset = lastOffset;
-    }
-    return offset;
-  }
+		if (this.pending.size() > 0) {
+			// find the smallest offset in pending list
+			offset = pending.keySet().iterator().next();
+		}
+		if (this.toResend.size() > 0) {
+			// Find the smallest offset in toResend list
+			String offset2 = this.toResend.first().getOffset();
+			if ((offset == null) || (offset2.compareTo(offset) < 0)) {
+				offset = offset2;
+			}
+		}
+		if (offset == null) {
+			offset = this.lastOffset;
+		}
+		return offset;
+	}
 }

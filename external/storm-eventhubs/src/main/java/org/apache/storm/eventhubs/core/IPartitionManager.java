@@ -22,11 +22,11 @@ import java.util.Map;
 public interface IPartitionManager {
     void open() throws Exception;
 
-    void close() throws Exception;
+    void close();
 
     EventHubMessage receive();
 
-    void checkpoint() throws Exception;
+    void checkpoint();
 
     void ack(String offset);
 
